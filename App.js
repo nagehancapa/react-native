@@ -6,23 +6,14 @@ import {
   Image,
   Button,
   Alert,
-  ScrollView,
   TouchableOpacity,
   TextInput,
+  FlatList,
 } from "react-native";
 
-export default function App() {
-  const randomNum = useRef(Math.random()).current;
-  const [text, setText] = useState("");
-
-  const inputText = (text) => {
-    setText(text);
-  };
-
-  const alertMessage = text;
-
+function MyHeader() {
   return (
-    <ScrollView style={{ marginHorizontal: 40, marginVertical: 60 }}>
+    <View style={{ marginHorizontal: 40, marginVertical: 60 }}>
       <Text style={{ fontWeight: "bold", fontSize: 24, marginBottom: 30 }}>
         Hello React Native
       </Text>
@@ -31,24 +22,20 @@ export default function App() {
         color="#c1262c"
         style={{ marginBottom: 30 }}
       />
+    </View>
+  );
+}
 
-      {[0, 1, 2, 3, 4].map((i) => {
-        return (
-          <TouchableOpacity
-            key={i}
-            onPress={() => Alert.alert("picsum photos")}
-          >
-            <Image
-              key={i}
-              source={{
-                uri: `https://picsum.photos/500/300?random=${randomNum + i}`,
-              }}
-              style={{ width: "100%", height: 160, marginBottom: 30 }}
-            />
-          </TouchableOpacity>
-        );
-      })}
+function MyFooter() {
+  const [text, setText] = useState("");
 
+  const inputText = (text) => {
+    setText(text);
+  };
+
+  const alertMessage = text;
+  return (
+    <View>
       <View
         style={{
           borderWidth: 2,
@@ -74,6 +61,34 @@ export default function App() {
         title="Learn More"
         color="#c1262"
       />
-    </ScrollView>
+    </View>
+  );
+}
+
+export default function App() {
+  const randomNum = useRef(Math.random()).current;
+
+  return (
+    <FlatList
+      ListHeaderComponent={MyHeader}
+      data={[0, 1, 2, 3, 4]}
+      renderItem={({ item }) => {
+        return (
+          <TouchableOpacity
+            onPress={() => Alert.alert(`You pressed image #${item + 1}`)}
+          >
+            <Image
+              source={{
+                uri: `https://picsum.photos/500/300?random=${randomNum + item}`,
+              }}
+              style={{ width: "100%", height: 160, marginBottom: 30 }}
+            />
+          </TouchableOpacity>
+        );
+      }}
+      keyExtractor={(item) => String(item)}
+      ListFooterComponent={MyFooter}
+      extraData={true}
+    />
   );
 }
