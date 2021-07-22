@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, Share, Alert } from "react-native";
 import { DeviceMotion } from "expo-sensors";
 
 export default function GameScreen() {
@@ -22,6 +22,27 @@ export default function GameScreen() {
     return () => subscription.remove();
   }, [setColor, paused]);
 
+  const share = async (color) => {
+    try {
+      const result = await Share.share({
+        message: `Check out this wonderful color: ${color}`,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log("shared with activity type of", result.activityType);
+        } else {
+          console.log("shared");
+        }
+      } else if (result.action === Share.dismissedAction) {
+        console.log("dismissed");
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+      console.log("failed sharing: ", error);
+    }
+  };
+
   return (
     <View
       style={{
@@ -42,6 +63,12 @@ export default function GameScreen() {
           onPress={() => setPaused(!paused)}
         />
       </View>
+      <Button
+        title={"Share this color"}
+        onPress={() => {
+          share(color);
+        }}
+      />
     </View>
   );
 }
